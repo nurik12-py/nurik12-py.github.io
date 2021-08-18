@@ -33,14 +33,14 @@
         <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark ">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">Game of life</a>
-                <a class="nav-link" href="">by nurik_dev</a>
+                <a class="nav-link" style="color: cornsilk;" href="">by nurik_dev</a>
             </div>
         </nav>
         <div id="matrix" class="d-flex flex-column justify-content-center align-items-center"></div>
         <div id="controlPanel" class="d-flex align-items-center justify-content-center">
             <button onclick="randomFill()" class="btn btn-outline-dark shadow m-1">Random</button>
             <button onclick="startSolver()" id="playBtn" class="btn btn-dark shadow m-1">Play</button>
-            <button onclick="solve()" class="btn btn-outline-dark shadow m-1">Next state</button>
+            <button onclick="solve()" class="btn btn-outline-dark shadow m-1">Next</button>
 
             <select id="speed" class="form-select m-1" style="width: 6em;">
                 <option value="1000">x0.5</option>
@@ -187,7 +187,7 @@
                 clearInterval(solverInterval)
             }
         }
-        randomFill();
+        // randomFill();
     </script>
 </body>
 
