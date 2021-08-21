@@ -46,12 +46,12 @@
     window.addEventListener('load', function () {
       c.width = width;
       c.height = height - 150;
-      drawCircle(width / 2, height / 2, radius, 2 * 360);
+      // drawCircle(width / 2, height / 2, radius, 2 * 360);
     })
 
     window.addEventListener('deviceorientation', (event) => {
       const alpha = event.alpha;
-      drawCircle(width / 2, height / 2, radius, alpha);
+      drawCircle(width / 2, height / 2, radius, parseInt(alpha));
       $("#degree").text(`${parseInt(alpha)}`);
       console.log(`alpha: ${alpha}`);
     });
