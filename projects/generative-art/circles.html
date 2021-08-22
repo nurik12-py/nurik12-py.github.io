@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+
+<body>
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Generative Art</a>
+        </div>
+    </nav>
+    <canvas style="width: 100%; height: 100%; margin-top: 3em;" id="myCanvas"></canvas>
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <label for="minSize" class="form-label">min circle's size</label>
+        <select onchange="redraw()" class="form-select" id="minSize" style="width: 5em;"
+            aria-label="Default select example">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <script>
+        const artName = "4 Circles in a Circle";
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerWidth;
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        const dpi = window.devicePixelRatio;
+        c.width = Math.floor(windowWidth * dpi);
+        c.height = Math.floor(windowHeight * dpi);
+        ctx.scale(dpi, dpi);
+        ctx.textAlign = "center";
+        ctx.font = "24px Arial";
+        ctx.strokeText(artName, windowWidth / 2, 24);
+
+        var minSize = 10;
+
+        ctx.lineWidth = 0.5;
+
+        function circle(x, y, radius, lineWidth) {
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function draw(x, y, radius, lineWidth) {
+            if (radius > minSize) {
+                draw(x - radius / 2, y, radius * 0.5, lineWidth);
+                draw(x + radius / 2, y, radius * 0.5, lineWidth);
+                draw(x, y - radius / 2, radius * 0.5, lineWidth);
+                draw(x, y + radius / 2, radius * 0.5, lineWidth);
+            }
+            setTimeout(function () {
+                circle(x, y, radius, lineWidth);
+            }, 250);
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, windowWidth, windowWidth);
+            minSize = document.getElementById("minSize").value;
+            if (windowHeight > windowWidth) {
+                draw(windowWidth / 2, windowHeight / 2, windowWidth / 2.1);
+            } else {
+                draw(windowWidth / 2, windowHeight / 2, windowHeight / 2.5);
+            }
+        }
+
+        if (windowHeight > windowWidth) {
+            draw(windowWidth / 2, windowHeight / 2, windowWidth / 2.1);
+        } else {
+            draw(windowWidth / 2, windowHeight / 2, windowHeight / 2.5);
+        }
+    </script>
+</body>
+
+</html>

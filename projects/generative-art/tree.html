@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+
+<body>
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Generative Art</a>
+        </div>
+    </nav>
+    <canvas style="width: 100%; height: 100%;" id="myCanvas"></canvas>
+    <div id="controls" class="d-flex flex-column justify-content-center align-items-center">
+        <label for="minSize" class="form-label">min branch length</label>
+        <select onchange="redraw()" class="form-select" id="minSize" style="width: 5em;"
+            aria-label="Default select example">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15" selected>15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <script>
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight - document.getElementById("nav").offsetHeight - document.getElementById("controls").offsetHeight - 50;
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        const dpi = window.devicePixelRatio;
+        c.width = Math.floor(windowWidth * dpi);
+        c.height = Math.floor(windowHeight * dpi);
+        ctx.scale(dpi, dpi);
+
+        var minSize = 15;
+
+        ctx.lineWidth = 1;
+
+
+        function drawLine(begin, end, stroke = 'black', width = 1) {
+            if (stroke) {
+                ctx.strokeStyle = stroke;
+            }
+
+            if (width) {
+                ctx.lineWidth = width;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(...begin);
+            ctx.lineTo(...end);
+            ctx.stroke();
+        }
+
+
+
+        function changeFillColor(brightness, length) {
+            if (brightness < 100) {
+                ctx.strokeStyle = `HSLA(180, 90%, ${brightness}%, ${length})`;
+            }
+        }
+
+        function tree(x, y, angle, length, brightness) {
+            var x1 = x + length * Math.sin(angle);
+            var y1 = y - length * Math.cos(angle);
+            // console.log(brightness);
+            setTimeout(function () {
+                changeFillColor(brightness, length / 20);
+                drawLine([x, y], [x1, y1], width = length / 20);
+            }, 0.1);
+            if (length > minSize) {
+                tree(x1, y1, angle + (Math.random() * 30) / 180, length * 0.85, brightness + parseInt(Math.random() * 30));
+                tree(x1, y1, angle + (-1 * ((Math.random() * 30) / 180)), length * 0.85, brightness + parseInt(Math.random() * 30));
+                // tree((x1 + x) / 2, (y + y1) / 2, brightness + randomNumber(-10, 10), angle + randomNumber(-30, 0), length * 0.8);
+            }
+
+        }
+        function redraw() {
+            ctx.clearRect(0, 0, windowWidth, windowHeight);
+            minSize = document.getElementById("minSize").value;
+            if (windowHeight > windowWidth) {
+                tree(windowWidth / 2, windowHeight, 0, 60, 50);
+            } else {
+                tree(windowWidth / 2, windowHeight, 0, 60, 50);
+            }
+        }
+
+
+        tree(windowWidth / 2, windowHeight, 0, 75, 50);
+
+    </script>
+</body>
+
+</html>
