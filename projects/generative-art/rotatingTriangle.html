@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+</head>
+
+<body>
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/projects/generative-art.html">Generative Art</a>
+        </div>
+    </nav>
+    <canvas style="width: 100%; height: 100%;" id="myCanvas"></canvas>
+    <div id="controls" class="d-flex flex-column justify-content-center align-items-center">
+        <label for="degreeShift" class="form-label">degree shift</label>
+        <select onchange="redraw()" class="form-select" id="degreeShift" style="width: 5em;"
+            aria-label="Default select example">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select>
+    </div>
+    <script>
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight - document.getElementById("nav").offsetHeight - document.getElementById("controls").offsetHeight - 50;
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        const dpi = window.devicePixelRatio;
+        var degreeShift = 2;
+        c.width = Math.floor(windowWidth * dpi);
+        c.height = Math.floor(windowHeight * dpi);
+        ctx.scale(dpi, dpi);
+        changeFillColor(0);
+        var degreeShift = 5;
+
+        ctx.lineWidth = 1;
+
+
+        function drawTriangle(one, two, three) {
+            ctx.beginPath();
+            ctx.moveTo(...one);
+            ctx.lineTo(...two);
+            ctx.lineTo(...three);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+
+        function changeFillColor(degree) {
+            if (degree < 360) {
+                ctx.strokeStyle = `HSLA(${degree}, 100%, 90%, 1.0)`;
+            }
+        }
+
+        const degrees_to_radians = deg => (deg * Math.PI) / 180.0;
+
+        function draw(radius, degree) {
+            x1 = windowWidth / 2 + radius * Math.sin(degrees_to_radians(degree + 240));
+            y1 = windowHeight / 2 + radius * Math.cos(degrees_to_radians(degree + 240));
+
+            x2 = windowWidth / 2 + radius * Math.sin(degrees_to_radians(degree + 120));
+            y2 = windowHeight / 2 + radius * Math.cos(degrees_to_radians(degree + 120));
+
+            x3 = windowWidth / 2 + radius * Math.sin(degrees_to_radians(degree + 0));
+            y3 = windowHeight / 2 + radius * Math.cos(degrees_to_radians(degree + 0));
+
+            drawTriangle([x1, y1], [x2, y2], [x3, y3]);
+            if (radius > 1) {
+                setTimeout(function () {
+                    changeFillColor(degree);
+                    draw(radius - 1, degree + degreeShift % 360);
+                }, 0.1);
+
+            }
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, windowWidth, windowHeight);
+            degreeShift = document.getElementById("degreeShift").value;
+            draw(150, 5 % 360);
+        }
+
+
+        draw(150, 0);
+
+    </script>
+</body>
+
+</html>
