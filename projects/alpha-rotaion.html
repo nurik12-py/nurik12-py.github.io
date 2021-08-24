@@ -32,7 +32,7 @@
     window.addEventListener('deviceorientation', (event) => {
       const alpha = event.alpha;
 
-      if (alpha >= 45 && aplha < 135) {
+      if (alpha >= 45 && alpha < 135) {
         $("#angle").text("v2");
       } else if (alpha > 135 && alpha <= 225) {
         $("#angle").text("v1");
