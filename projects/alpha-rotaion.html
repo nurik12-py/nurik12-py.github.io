@@ -24,35 +24,47 @@
 </head>
 
 <body>
-  <canvas id="myCanvas"></canvas>
-  <div id="degree">0</div>
+  <video onclick="start()" id="video1" width="320" height="240">
+    <source src="king.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <video onclick="start()" id="video2" width="320" height="240">
+    <source src="smash.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <h1 id="angle">2</h1>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script>
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    const radius = width / 3;
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
+    var video1 = document.getElementById("video1");
+    var video2 = document.getElementById("video2");
 
-    function drawCircle(x, y, radius, alpha) {
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 1.5, alpha / 180 * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = '#003300'
-      ctx.stroke();
+    function start() {
+      video1.play();
+      video2.muted = true;
+      video2.play();
     }
-
-    window.addEventListener('load', function () {
-      c.width = width;
-      c.height = height - 150;
-      // drawCircle(width / 2, height / 2, radius, 2 * 360);
-    })
 
     window.addEventListener('deviceorientation', (event) => {
       const alpha = event.alpha;
-      drawCircle(width / 2, height / 2, radius, parseInt(alpha));
-      $("#degree").text(`${parseInt(alpha)}`);
+
+      if (alpha >= 45 && aplha <= 135) {
+        $("#angle").text("v2");
+        video2.muted = false;
+        video1.muted = true;
+      } else if (alpha > 135 && alpha <= 225) {
+        $("#angle").text("v1");
+        video2.muted = true;
+        video1.muted = false;
+      } else if (aplha > 225 && alpha < 315) {
+        $("#angle").text("v2");
+        video2.muted = false;
+        video1.muted = true;
+      } else {
+        $("#angle").text("v1");
+        video2.muted = true;
+        video1.muted = false;
+      }
       console.log(`alpha: ${alpha}`);
     });
 
