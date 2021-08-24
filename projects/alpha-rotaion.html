@@ -1,74 +1,31 @@
-<!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="utf-8">
-  <meta name="robots" content="noindex, nofollow">
-  <style type="text/css">
-    #degree {
-      margin-top: 0.375em;
-      width: 100%;
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 64px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-weight: 600;
-      top: 50%;
-      transform: translate(0, -50%);
-    }
-  </style>
-
-  <title>Detecting device orientation - Orientation_example - code sample</title>
-</head>
-
-<body>
-  <video onclick="start()" id="video1" width="320" height="240">
-    <source src="king.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <video onclick="start()" id="video2" width="320" height="240">
-    <source src="smash.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <h1 id="angle">2</h1>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script>
-    var video1 = document.getElementById("video1");
-    var video2 = document.getElementById("video2");
-
-    function start() {
-      video1.play();
-      video2.muted = true;
-      video2.play();
-    }
-
-    window.addEventListener('deviceorientation', (event) => {
-      const alpha = event.alpha;
-
-      if (alpha >= 45 && aplha <= 135) {
-        $("#angle").text("v2");
-        video2.muted = false;
-        video1.muted = true;
-      } else if (alpha > 135 && alpha <= 225) {
-        $("#angle").text("v1");
-        video2.muted = true;
-        video1.muted = false;
-      } else if (alpha > 225 && alpha < 315) {
-        $("#angle").text("v2");
-        video2.muted = false;
-        video1.muted = true;
-      } else {
-        $("#angle").text("v1");
-        video2.muted = true;
-        video1.muted = false;
-      }
-      console.log(`alpha: ${alpha}`);
-    });
-
-  </script>
-</body>
-
+    <head>
+        <style>
+        div {
+            height:100%;
+            width:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        </style>
+    </head>
+    <body>
+        <div></div>
+        <script>
+        const div = document.querySelector('div');
+        
+        window.addEventListener('deviceorientation',function(){
+            var angle = window.orientation ;
+            switch(angle){
+                case 0 : div.innerHTML="PORTRAIT";
+                break;
+                case 90 : div.innerHTML="LANDSCAPE";
+                break;
+                case -90 : div.innerHTML="LANDSCAPE";
+                break;
+            }
+        });
+        </script>
+    </body>
 </html>
