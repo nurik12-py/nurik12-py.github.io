@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Prototype</title>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .square {
+            width: 30px;
+            height: 30px;
+            border-style: solid;
+            border-width: 0.5px;
+            border-color: rgba(0, 0, 0, 0.1);
+            background: #F8F7F2;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 4em;
+            right: 0;
+        }
+
+        .navbar-brand {
+            font-size: 1rem;
+        }
+
+        .form-check {
+            margin-bottom: 0;
+            padding-left: 0;
+        }
+
+        .form-check .form-check-input {
+            margin-left: 0;
+        }
+
+        .form-check-label {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="#nav" class="navbar navbar-expand-lg d-flex justify-content-between shadow-sm">
+        <a class="navbar-brand mx-2" href="/">Taximan</a>
+        <div class="d-flex align-items-center justify-content-center">
+            <button onclick="handleFillChange(0)" style="padding: 0;"
+                class="btn mx-1 d-flex flex-column align-items-center justify-content-center">
+                <div
+                    style="border-radius: 100%; width: 20px; height: 20px; background-color: #F8F7F2; border: 1px solid rgba(0, 0, 0, 0.1)">
+                </div>
+                <p style="font-size: smaller;">Ground</p>
+            </button>
+            <button onclick="handleFillChange(1)" style="padding: 0;"
+                class="btn  mx-1 d-flex flex-column align-items-center justify-content-center">
+                <div
+                    style="border-radius: 100%; width: 20px; height: 20px; background-color: #ced4da; border: 1px solid rgba(0, 0, 0, 0.1)">
+                </div>
+                <p style="font-size: smaller;">Road</p>
+            </button>
+            <button onclick="handleFillChange(2)" style="padding: 0;"
+                class="btn mx-1 d-flex flex-column align-items-center justify-content-center">
+                <div
+                    style="border-radius: 100%; width: 20px; height: 20px; background-color: #495057; border: 1px solid rgba(0, 0, 0, 0.1)">
+                </div>
+                <p style="font-size: smaller;">Building</p>
+            </button>
+        </div>
+        <button onclick="saveMap()" class="btn btn-sm btn-primary mx-2">Start</button>
+    </nav>
+
+    <div id="map"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script>
+        var graph = [];
+        var fillType = 1;
+        const col = window.innerWidth / 30;
+        const row = (window.innerHeight - 60) / 30;
+
+        function setupMap(savedMap) {
+            if (savedMap !== null) {
+                graph = savedMap;
+            } else {
+                // filling graph with 0 and setting col & rows
+                for (var i = 0; i < row; i++) {
+                    graph.push([]);
+                    for (var j = 0; j < col; j++) {
+                        graph[i].push(0);
+                    }
+                }
+            }
+
+            // add cells to map with onclick events
+            var map = $("#map");
+            for (var i = 0; i < graph.length; i++) {
+                var currentRow = $(`<div id="row-${i}" class="d-flex justify-items-center"></div>`).appendTo(map);
+                for (var j = 0; j < graph[0].length; j++) {
+                    currentRow.append(`<div id="cell-${i}-${j}" style="background: ${getFillColor(graph[i][j])}" class="square" onclick='handleClick(${i}, ${j})'></div>`);
+                }
+            }
+        }
+
+        function getFillColor(fillType) {
+            // 0 - empty space
+            // 1 - road
+            // 2 - building 
+            if (fillType == 0) {
+                return "#F8F7F2";
+            } else if (fillType == 1) {
+                return "#ced4da";
+            } else if (fillType == 2) {
+                return "#495057";
+            }
+        }
+
+        function handleFillChange(newfillType) {
+            fillType = newfillType;
+        }
+
+        function handleClick(i, j) {
+            if (graph[i][j] == 0) {
+                graph[i][j] = fillType;
+                $(`#cell-${i}-${j}`).css({ 'background': getFillColor(fillType) });
+            } else {
+                graph[i][j] = 0;
+                $(`#cell-${i}-${j}`).css({ 'background': getFillColor(0) });
+            }
+            console.log(i, j);
+        }
+
+        function saveMap() {
+            console.log(graph);
+            localStorage.setItem('map', JSON.stringify(graph));
+            window.location = "/taxi.html";
+        }
+
+        $(document).ready(function () {
+            if (localStorage.getItem("map") !== null) {
+                const map = JSON.parse(localStorage.getItem('map'));
+                setupMap(map);
+            } else {
+                setupMap(null);
+            }
+
+        });
+
+    </script>
+</body>
+
+</html>

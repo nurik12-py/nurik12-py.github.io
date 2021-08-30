@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <title>Taximan</title>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .square {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 4em;
+            right: 0;
+        }
+
+        .navbar-brand {
+            font-size: 1rem;
+        }
+
+        .form-check {
+            margin-bottom: 0;
+            padding-left: 0;
+        }
+
+        .form-check .form-check-input {
+            margin-left: 0;
+        }
+
+        .form-check-label {
+            font-size: 0.8rem;
+        }
+
+        #car {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: -15px;
+            /* left: 145px; */
+            transition-duration: 0.2s;
+            transition-property: transform;
+            z-index: 10;
+        }
+
+        .stop-cell {
+            border-radius: 100%;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            border: 3px solid rgba(11, 68, 173, 0.815);
+            transition-property: all;
+            transition-duration: 1s;
+        }
+
+        .stop-cell:hover {
+            box-shadow: 0px 0px 2px #da2f2f86;
+            border: 3px solid rgba(243, 17, 17, 0.815);
+        }
+
+        #nav {
+            position: absolute;
+            bottom: 0;
+            z-index: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="modal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="staticBackdropLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="map">
+        <img id="car" src="NicePng_car-top-view-png_544632 2.png" />
+    </div>
+    <nav id="#nav" class="navbar navbar-expand-lg d-flex justify-content-between border-top">
+        <a class="navbar-brand mx-2" href="/">Taximan</a>
+        <div>
+            <p id="route-details" class="text-center">Choose destination</p>
+            <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Launch static backdrop modal
+            </button> -->
+        </div>
+        <button onclick="startRide()" id="startBtn" class="btn btn-sm btn-primary mx-2">Confirm</button>
+    </nav>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="node.js"></script>
+    <script src="bfs.js"></script>
+    <script src="car.js"></script>
+    <script>
+        const ROAD_COLOR = "#FFFFFF";
+        const BUILDING_COLOR = "#F3F0E7";
+        const GROUND_COLOR = "#F8F7F2";
+        var graph = [];
+        var fillType = 1;
+        const col = window.innerWidth / 30;
+        const row = (window.innerHeight - 60) / 30;
+        var currentNode = new Node(null, 0, 2);
+        var targetNode = new Node(null, 13, 19);
+        var isRunning = false;
+
+        function getFillColor(fillType) {
+            // 0 - empty space
+            // 1 - road
+            // 2 - building 
+            if (fillType == 0) {
+                return GROUND_COLOR;
+            } else if (fillType == 1) {
+                return ROAD_COLOR;
+            } else if (fillType == 2) {
+                return BUILDING_COLOR;
+            }
+        }
+
+        function setupMap(map) {
+            graph = map;
+            // add cells to map with onclick events
+            var map = $("#map");
+            for (var i = 0; i < graph.length; i++) {
+                var currentRow = $(`<div id="row-${i}" class="d-flex justify-items-center"></div>`).appendTo(map);
+                for (var j = 0; j < graph[0].length; j++) {
+                    currentRow.append(`<div id="cell-${i}-${j}" style="background: ${getFillColor(graph[i][j])}" class="square" onclick='handleClick(${i}, ${j})'></div>`);
+                }
+            }
+            drawBorders(1);
+        }
+
+        function handleClick(i, j) {
+            console.log(i, j);
+        }
+
+        function drawPath(i, node) {
+            setTimeout(function () {
+                var cell = $(`#cell-${node.x}-${node.y}`);
+                cell.css('background-color', '#ced4da');
+                cell.animate({ opacity: '0.5' }, "slow");
+                cell.animate({ opacity: '1' }, "slow");
+            }, i * 50);
+
+        }
+
+        function drawBorders(buildingType) {
+            const borderStyle = "0.5px solid rgba(0, 0, 0, 0.1)";
+            for (var i = 0; i < graph.length; i++) {
+                for (var j = 0; j < graph[i].length; j++) {
+                    var adjacentPositions = [[0, 1], [1, 0], [-1, 0], [0, -1]];
+                    if (graph[i][j] == buildingType) {
+                        var side = 0;
+                        var cell = $(`#cell-${i}-${j}`);
+                        for (var adjacent of adjacentPositions) {
+                            var currentI = i + adjacent[0];
+                            var currentJ = j + adjacent[1];
+                            if (currentI >= 0 && currentI < row && currentJ >= 0 && currentJ < col && graph[currentI][currentJ] != buildingType) {
+                                if (side == 0) {
+                                    cell.css('border-right', borderStyle);
+                                } else if (side == 1) {
+                                    cell.css('border-bottom', borderStyle);
+                                } else if (side == 2) {
+                                    cell.css('border-top', borderStyle);
+                                } else {
+                                    cell.css('border-left', borderStyle);
+                                }
+                            }
+                            side++;
+                        }
+                    }
+                }
+            }
+        }
+
+        function putDesination(i, j) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    var adjacentPositions = [[0, 1], [1, 0], [-1, 0], [0, -1]];
+                    var count = 0;
+                    for (var adjacent of adjacentPositions) {
+                        var currentI = i + adjacent[0];
+                        var currentJ = j + adjacent[1];
+                        if (currentI >= 0 && currentI < row && currentJ >= 0 && currentJ < col && graph[currentI][currentJ] == 1) {
+                            var cell = $(`#cell-${currentI}-${currentJ}`);
+                            if (count == 0) {
+                                if (cell.children().length == 0) {
+                                    cell.append(`<div onclick="handleDestinationChange(${currentI}, ${currentJ})" class="stop-cell animate__animated animate__fadeIn animate__delay-1s"></div>`);
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                    resolve();
+                }, 20);
+            });
+        }
+
+
+
+        function clearDestinations() {
+            for (var i = 0; i < graph.length; i++) {
+                for (var j = 0; j < graph[i].length; j++) {
+                    if (graph[i][j] == 1 && !(i == targetNode.x && j == targetNode.y)) {
+                        $(`#cell-${i}-${j}`).empty();
+                    }
+                }
+            }
+        }
+
+        async function drawDestinations() {
+            for (var i = 0; i < graph.length; i++) {
+                for (var j = 0; j < graph[i].length; j++) {
+                    if (graph[i][j] == 2) {
+                        await putDesination(i, j);
+                    }
+                }
+            }
+        }
+
+        function handleDestinationChange(x, y) {
+            if (isRunning) return;
+            targetNode = new Node(null, x, y);
+            var path = bfs(graph, currentNode, targetNode);
+            var i = 0;
+            for (var node of path) {
+                drawPath(i++, node);
+            }
+            var distance = (path.length * 0.33).toFixed(1);
+            var cost = (path.length * 0.3 * 0.5).toFixed(2);
+            $("#route-details").text(`${distance}km - $${cost}`);
+        }
+
+        function placeCurrentNode() {
+            for (var i = 0; i < graph.length; i++) {
+                for (var j = 0; j < graph[i].length; j++) {
+                    if (graph[i][j] == 1) {
+                        currentNode = new Node(null, i, j);
+                    }
+                }
+            }
+        }
+
+        $(document).ready(function () {
+            if (localStorage.getItem("map") === null) {
+                window.location = "/build.html";
+            } else {
+                const map = JSON.parse(localStorage.getItem('map'));
+                setupMap(map);
+                drawDestinations();
+            }
+        });
+
+
+        async function startRide() {
+            $("#route-details").text(``);
+            $("#startBtn").prop('disabled', true);
+            isRunning = true;
+            clearDestinations();
+            var path = bfs(graph, currentNode, targetNode);
+            var car = new Car(currentNode.x, currentNode.y, 20, "car");
+            await car.followPath(path);
+            currentNode = new Node(null, path[path.length - 1].x, path[path.length - 1].y);
+            $("#startBtn").prop('disabled', false);
+            drawDestinations();
+            // $("#modal").css("display", "block");
+            isRunning = false;
+        }
+
+    </script>
+</body>
+
+</html>
