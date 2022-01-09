@@ -4,44 +4,47 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="mask-icon" href="assets/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 
-    <title>Projects</title>
-    <style>
-        .square {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            border: 1px solid rgb(47, 47, 56);
-            background-color: #000000;
-        }
-
-        .liveCell {
-            background: rgb(240, 249, 255);
-        }
-
-        .bg-drk {
-            background-color: #000000;
-        }
-    </style>
+    <title>About Me</title>
 </head>
 
 <body>
-    <div>
-        <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark ">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Projects</a>
-                <a class="nav-link" style="color: cornsilk;" href="">by nurik_dev</a>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-4  mt-4 d-flex align-items-center justify-content-center">
+                <div class="w-75 p-2 bg-light shadow-sm shadow rounded-circle">
+                    <img class="w-100 rounded-circle" src="assets/profile.jpg" />
+                </div>
             </div>
-        </nav>
-        <div class="list-group">
-            <a href="/projects/game-of-life.html" class="list-group-item list-group-item-action">Game of Life</a>
-            <a href="/projects/alpha-rotaion.html" class="list-group-item list-group-item-action">Alpha Rotaion</a>
-            <a href="/projects/generative-art.html" class="list-group-item list-group-item-action">Generative Art</a>
-            <a href="/projects/taxi/build.html" class="list-group-item list-group-item-action">Taxi</a>
+            <div class="col-12 col-md-8 ">
+                <div class="p-4">
+                    <h1>Hello</h1>
+                    <p>My name is <b>Nursultan Musiraliev</b>. On this website you will find fun projects
+                        mostly
+                        related to
+                        algorithms and data structures.</p>
+                </div>
+                <div class="px-4">
+                    <h1>Projects</h1>
+
+                    <div class="list-group">
+                        <a href="https://tag-ml.web.app/" class="list-group-item list-group-item-action"><b>Tag</b> -
+                            Review
+                            Classifier</a>
+                        <a href="projects.html" class="list-group-item list-group-item-action"><b>Projects</b> - Algo &
+                            DS</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

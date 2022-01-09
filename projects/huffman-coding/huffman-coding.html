@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Huffman Coding</title>
+    <style>
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgb(47, 47, 56);
+            background-color: #000000;
+        }
+
+        .liveCell {
+            background: rgb(240, 249, 255);
+        }
+
+        .bg-drk {
+            background-color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Huffman Coding</a>
+        </div>
+    </nav>
+    <script>
+        var HaffmanNode = function (val, freq, left, right) {
+            this.val = val;
+            this.freq = freq;
+            this.left = left === undefined ? null : left;
+            this.right = right === undefined ? null : right;
+        }
+
+        let text = prompt("Enter your message:", "");
+        let map = {};
+        for (let letter of text) {
+            if (letter in map) {
+                map[letter]++;
+            } else {
+                map[letter] = 1;
+            }
+        }
+
+        let nodes = [];
+        Object.keys(map).forEach((key) => {
+            let node = new HaffmanNode(key, map[key]);
+            nodes.push(node);
+        });
+
+        nodes.sort((a, b) => a.freq - b.freq);
+
+        let root = null;
+
+        // creating Tree
+        while (nodes.length > 1) {
+            let x = nodes.shift();
+            let y = nodes.shift();
+            let z = new HaffmanNode();
+
+            z.freq = x.freq + y.freq;
+            z.value = '';
+            z.left = x;
+            z.right = y;
+            root = z;
+
+            nodes.push(z);
+        }
+
+        let getMap = function (root) {
+            let map = {};
+
+            let dfs = (root, s) => {
+                if (root.left == null && root.right == null && root.val !== '') {
+                    map[root.val] = s;
+                    return;
+                }
+                dfs(root.left, s + "0");
+                dfs(root.right, s + "1");
+            }
+            dfs(root, "");
+
+            return map;
+        }
+
+        let codes = getMap(root);
+        let compresedSize = 0;
+
+        text.split("").forEach(letter => compresedSize += codes[letter].length);
+
+        console.log(text.length * 8);
+        console.log(compresedSize);
+
+        console.log(codes);
+    </script>
+</body>
+
+</html>
