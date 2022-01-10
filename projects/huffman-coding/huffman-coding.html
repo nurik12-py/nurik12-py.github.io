@@ -34,74 +34,65 @@
             <a class="navbar-brand" href="/">Huffman Coding</a>
         </div>
     </nav>
+
+
+    <div class="px-4 mt-2">
+        <h1>Data</h1>
+        <div class="form-group">
+            <textarea placeholder="Enter text" class="w-100 form-control" id="text"></textarea>
+        </div>
+        <button class="btn btn-primary mt-3" onclick="handleClick()">Compress</button>
+    </div>
+    <div id="main" style="display: none;">
+        <div class="px-4 mt-4">
+            <h1>Letter Frequency Table</h1>
+            <div id="letterFreqList" class="list-group">
+
+            </div>
+        </div>
+
+        <div class="px-4 mt-4">
+            <h1>Code Table</h1>
+            <div id="codeTable" class="list-group">
+
+            </div>
+        </div>
+
+        <div class="px-4 mt-4">
+            <h1>Compresed Binary</h1>
+            <div id="binaryCode"></div>
+        </div>
+    </div>
+    <script src="huffman.js"></script>
     <script>
-        var HaffmanNode = function (val, freq, left, right) {
-            this.val = val;
-            this.freq = freq;
-            this.left = left === undefined ? null : left;
-            this.right = right === undefined ? null : right;
+        function handleClick() {
+            document.getElementById("main").style.display = "block";
+
+            let text = document.getElementById("text").value;
+            if (text.length === 0) return;
+            let huffmanCode = new HuffmanCode(text);
+
+            let letterFreqMap = huffmanCode.getLetterFrequencyMap();
+
+            document.getElementById("letterFreqList").innerHTML = "";
+            Object.keys(letterFreqMap).forEach((letter) => {
+                let listItem = `<div class="list-group-item list-group-item-action"><b>${letter !== " " ? letter : 'space'}</b> - ${letterFreqMap[letter]}</div>`;
+                document.getElementById("letterFreqList").innerHTML += listItem;
+            });
+
+            let huffmanTree = huffmanCode.getHuffmanTree();
+
+            let huffmanMap = huffmanCode.getHuffmanMap(huffmanTree);
+
+            document.getElementById("codeTable").innerHTML = "";
+            Object.keys(huffmanMap).forEach((letter) => {
+                let listItem = `<div class="list-group-item list-group-item-action"><b>${letter !== " " ? letter : 'space'}</b> - ${huffmanMap[letter]}</div>`;
+                document.getElementById("codeTable").innerHTML += listItem;
+            });
+
+            let compresedBinary = huffmanCode.getCompresedBinary();
+            document.getElementById("binaryCode").innerHTML = compresedBinary;
         }
-
-        let text = prompt("Enter your message:", "");
-        let map = {};
-        for (let letter of text) {
-            if (letter in map) {
-                map[letter]++;
-            } else {
-                map[letter] = 1;
-            }
-        }
-
-        let nodes = [];
-        Object.keys(map).forEach((key) => {
-            let node = new HaffmanNode(key, map[key]);
-            nodes.push(node);
-        });
-
-        nodes.sort((a, b) => a.freq - b.freq);
-
-        let root = null;
-
-        // creating Tree
-        while (nodes.length > 1) {
-            let x = nodes.shift();
-            let y = nodes.shift();
-            let z = new HaffmanNode();
-
-            z.freq = x.freq + y.freq;
-            z.value = '';
-            z.left = x;
-            z.right = y;
-            root = z;
-
-            nodes.push(z);
-        }
-
-        let getMap = function (root) {
-            let map = {};
-
-            let dfs = (root, s) => {
-                if (root.left == null && root.right == null && root.val !== '') {
-                    map[root.val] = s;
-                    return;
-                }
-                dfs(root.left, s + "0");
-                dfs(root.right, s + "1");
-            }
-            dfs(root, "");
-
-            return map;
-        }
-
-        let codes = getMap(root);
-        let compresedSize = 0;
-
-        text.split("").forEach(letter => compresedSize += codes[letter].length);
-
-        console.log(text.length * 8);
-        console.log(compresedSize);
-
-        console.log(codes);
     </script>
 </body>
 
