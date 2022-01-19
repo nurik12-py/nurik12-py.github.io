@@ -77,10 +77,5 @@ class HuffmanCode {
         });
         return compresedBinary;
     }
-    // TODO write a function that returns a string that repesent binary tree like an example below:
-    //     a
-    //    / \
-    //   b   c
 
 }
-

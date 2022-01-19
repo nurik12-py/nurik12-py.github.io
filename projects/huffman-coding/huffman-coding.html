@@ -43,55 +43,91 @@
         </div>
         <button class="btn btn-primary mt-3" onclick="handleClick()">Compress</button>
     </div>
-    <div id="main" style="display: none;">
-        <div class="px-4 mt-4">
-            <h1>Letter Frequency Table</h1>
-            <div id="letterFreqList" class="list-group">
-
-            </div>
-        </div>
-
-        <div class="px-4 mt-4">
-            <h1>Code Table</h1>
-            <div id="codeTable" class="list-group">
-
-            </div>
-        </div>
-
-        <div class="px-4 mt-4">
-            <h1>Compresed Binary</h1>
-            <div id="binaryCode"></div>
-        </div>
-    </div>
+    <canvas style="width: 100%; height: 100%;" id="myCanvas"></canvas>
+    
     <script src="huffman.js"></script>
     <script>
-        function handleClick() {
-            document.getElementById("main").style.display = "block";
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerWidth;
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        const dpi = window.devicePixelRatio;
+        c.width = Math.floor(windowWidth * dpi);
+        c.height = Math.floor(windowHeight * dpi);
+        ctx.scale(dpi, dpi);
 
+        const degrees_to_radians = deg => (deg * Math.PI) / 180.0;
+
+        function text(x, y, txt) {
+            ctx.fillStyle="white";
+            ctx.textAlign = "center";
+            ctx.font = "bold 12px Arial";
+            ctx.fillText(txt, x, y+4);
+        }
+
+        function circle(x, y, radius, lineWidth) {
+            ctx.lineWidth = lineWidth;
+            ctx.fillStyle = "#000000";
+            ctx.strokeStyle = "#000000";
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function drawLine(begin, end, stroke = 'black', width = 1) {
+            if (stroke) {
+                ctx.strokeStyle = stroke;
+            }
+
+            if (width) {
+                ctx.lineWidth = width;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(...begin);
+            ctx.lineTo(...end);
+            ctx.stroke();
+        }
+
+        function drawTree(x, y, root, radius, angle, length) {
+            if(!root) return;
+
+            circle(x, y, radius, 1);
+            text(x, y, root.val);
+            
+            let change = length * Math.sin(degrees_to_radians(angle));
+            let downShift = radius * 2;
+            if(root.left) {
+                setTimeout(() => {
+                    let newX = x + change;
+                    let newY = y + downShift;
+                    drawLine([x, y], [newX, newY]);
+                    this.drawTree(newX, newY, root.left, radius, angle*0.4, length*0.9);
+                }, 500);
+            }
+            if(root.right) {
+                setTimeout(() => {
+                    let newX = x - change;
+                    let newY = y + downShift;
+                    drawLine([x, y], [newX, newY]);
+                    this.drawTree(newX, newY, root.right, radius, angle*0.4, length*0.9);
+                }, 250);
+            }
+    
+        }
+
+        function handleClick() {
             let text = document.getElementById("text").value;
             if (text.length === 0) return;
             let huffmanCode = new HuffmanCode(text);
 
             let letterFreqMap = huffmanCode.getLetterFrequencyMap();
-
-            document.getElementById("letterFreqList").innerHTML = "";
-            Object.keys(letterFreqMap).forEach((letter) => {
-                let listItem = `<div class="list-group-item list-group-item-action"><b>${letter !== " " ? letter : 'space'}</b> - ${letterFreqMap[letter]}</div>`;
-                document.getElementById("letterFreqList").innerHTML += listItem;
-            });
-
             let huffmanTree = huffmanCode.getHuffmanTree();
-
             let huffmanMap = huffmanCode.getHuffmanMap(huffmanTree);
-
-            document.getElementById("codeTable").innerHTML = "";
-            Object.keys(huffmanMap).forEach((letter) => {
-                let listItem = `<div class="list-group-item list-group-item-action"><b>${letter !== " " ? letter : 'space'}</b> - ${huffmanMap[letter]}</div>`;
-                document.getElementById("codeTable").innerHTML += listItem;
-            });
-
             let compresedBinary = huffmanCode.getCompresedBinary();
-            document.getElementById("binaryCode").innerHTML = compresedBinary;
+            console.log(huffmanMap);
+            drawTree(windowWidth/2, 30, huffmanTree, 8, 90, windowWidth/4);  
         }
     </script>
 </body>
