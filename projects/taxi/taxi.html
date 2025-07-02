@@ -106,7 +106,7 @@
         </div>
     </div>
     <div id="map">
-        <img id="car" src="NicePng_car-top-view-png_544632 2.png" />
+        <img id="car" src="NicePng_car-top-view-png_544632 2.png" alt="Car" />
     </div>
     <nav id="#nav" class="navbar navbar-expand-lg d-flex justify-content-between border-top">
         <a class="navbar-brand mx-2" href="/">Taximan</a>
@@ -132,8 +132,8 @@
         const GROUND_COLOR = "#F8F7F2";
         var graph = [];
         var fillType = 1;
-        const col = window.innerWidth / 30;
-        const row = (window.innerHeight - 60) / 30;
+        const col = Math.floor(window.innerWidth / 30);
+        const row = Math.floor((window.innerHeight - 60) / 30);
         var currentNode = new Node(null, 0, 2);
         var targetNode = new Node(null, 13, 19);
         var isRunning = false;
@@ -281,6 +281,7 @@
             } else {
                 const map = JSON.parse(localStorage.getItem('map'));
                 setupMap(map);
+                placeCurrentNode();
                 drawDestinations();
             }
         });
