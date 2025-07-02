@@ -93,8 +93,8 @@
     <script>
         var graph = [];
         var fillType = 1;
-        const col = window.innerWidth / 30;
-        const row = (window.innerHeight - 60) / 30;
+        const col = Math.floor(window.innerWidth / 30);
+        const row = Math.floor((window.innerHeight - 60) / 30);
 
         function setupMap(savedMap) {
             if (savedMap !== null) {
